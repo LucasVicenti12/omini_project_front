@@ -1,15 +1,15 @@
 import {createContext, ReactNode, useEffect, useState} from "react";
 import {chatRepository} from "@/modules/chat/repository/chat_repository.ts";
+import SockJS from 'sockjs-client';
+import {Client} from "@stomp/stompjs";
 
 type ChatPageContextState = {
-    chatUUID: string | null,
     userMessage: any,
     messages: any[],
     sendMessage: (message: string) => void,
 }
 
 const initialState: ChatPageContextState = {
-    chatUUID: null,
     userMessage: null,
     messages: [],
     sendMessage: () => {
@@ -17,46 +17,98 @@ const initialState: ChatPageContextState = {
 }
 
 type ChatPageProviderProps = {
-    chatUUID: string,
+    sendUserUUID: string,
+    receiptUserUUID: string,
     children: ReactNode
 }
 
 export const ChatPageContext = createContext<ChatPageContextState>(initialState);
 
-export const ChatPageProvider = ({chatUUID, children}: ChatPageProviderProps) => {
+const stomp = new Client()
+export const ChatPageProvider = ({sendUserUUID, receiptUserUUID, children}: ChatPageProviderProps) => {
     const [userMessage, setUserMessage] = useState(null);
 
     const [messages, setMessages] = useState([]);
 
+    const [
+        chatSession,
+        setChatSession
+    ] = useState({session: "", situation: ""});
+
     useEffect(() => {
-        chatRepository.getUserByUUID(chatUUID).then((response) => {
+        chatRepository.getUserByUUID(receiptUserUUID).then((response) => {
             if (response.error === null) {
                 setUserMessage(response.user);
             }
         })
-    }, [chatUUID]);
+        chatRepository.connectChatSession(sendUserUUID, receiptUserUUID).then((response) => {
+            if (response.error === null) {
+                setChatSession({
+                    session: response.chatSession ?? "",
+                    situation: response.situation ?? ""
+                })
+            }
+        })
+        stomp.deactivate()
+    }, [receiptUserUUID]);
 
-    const websocket = new WebSocket(`ws://localhost:9000/ws/${chatUUID}`)
+    useEffect(() => {
+        if(chatSession.session !== ''){
+            try {
+                // @ts-ignore
+                stomp.webSocketFactory = function () {
+                    return new SockJS("http://localhost:9000/ws");
+                }
+                stomp.activate()
+                stomp.onConnect = () => {
+                    stomp.subscribe(`/topic/${chatSession.session}`, onReceivedMessage)
+                }
+                stomp.onStompError = onSocketError
+            } catch (e) {
+            }
+            chatRepository
+                .getMessage(chatSession.session)
+                .then((response) => {
+                    setMessages(response.messages);
+                })
+        }
+    }, [chatSession]);
 
-    websocket.onmessage = (response) => {
-        setMessages(prevState => prevState.concat(JSON.parse(response.data)))
+    const onReceivedMessage = (payload: any) => {
+        let newMessage = JSON.parse(payload.body);
+        if(!newMessage){
+            return;
+        }
+        // @ts-ignore
+        if (messages.includes(newMessage)) {
+            return;
+        }
+        setMessages(prev => prev.concat(JSON.parse(payload.body)))
+    }
+
+    const onSocketError = (error: any) => {
+        console.log(error);
+    }
+
+    const handleSendMessage = (message: string) => {
+        stomp.publish({
+            destination: "/app/chat_add_message",
+            body: JSON.stringify({
+                chatSessionUUID: chatSession.session,
+                content: message,
+                sendUserUUID: sendUserUUID,
+                attachMessages: []
+            })
+        })
     }
 
     const value = {
-        chatUUID,
         userMessage,
         messages,
         sendMessage: (message: string) => {
-            websocket.send(JSON.stringify({
-                uuid: "sjdhsj",
-                message,
-                dateTimeMessage: null,
-                userUUID: null
-            }))
+            handleSendMessage(message)
         }
     }
-
-    console.log(messages)
 
     return (
         <ChatPageContext.Provider value={value}>

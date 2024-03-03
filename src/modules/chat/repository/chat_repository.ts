@@ -22,6 +22,70 @@ class ChatRepository {
             }
         }
     }
+
+    async connectChatSession(sendUserUUID: string, receiptUserUUID: string): Promise<ChatSessionResponse> {
+        try {
+            const response = await http.get(
+                `/chat_session/connect?sendUserUUID=${sendUserUUID}&receiptUserUUID=${receiptUserUUID}`
+            )
+            if (response.status === 200) {
+                if (response.data !== null) {
+                    return {
+                        chatSession: response.data.chatSession.chatSession,
+                        situation: response.data.situation,
+                        error: null
+                    }
+                } else {
+                    return {
+                        chatSession: null,
+                        situation: null,
+                        error: "Lost connection"
+                    }
+                }
+            } else {
+                return {
+                    chatSession: null,
+                    situation: null,
+                    error: "An unexpected error has occurred"
+                }
+            }
+        } catch (e) {
+            return {
+                chatSession: null,
+                situation: null,
+                error: "An unexpected error has occurred"
+            }
+        }
+    }
+
+    async getMessage(chatSessionUUID: string): Promise<MessagesResponse> {
+        try {
+            const response = await http.get(`/messages?chatSessionUUID=${chatSessionUUID}`);
+            if (response.status === 200) {
+                if (response.data !== null) {
+                    return {
+                        messages: response.data,
+                        error: null
+                    }
+                } else {
+                    return {
+                        messages: [],
+                        error: "An unexpected error has occurred"
+                    }
+                }
+            } else {
+                return {
+                    messages: [],
+                    error: "An unexpected error has occurred"
+                }
+            }
+        } catch (e) {
+            return {
+                messages: [],
+                error: "An unexpected error has occurred"
+            }
+        }
+    }
 }
 
 export const chatRepository = new ChatRepository();

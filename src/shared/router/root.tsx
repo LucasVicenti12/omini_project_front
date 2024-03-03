@@ -34,7 +34,7 @@ export const Root = () => {
                     }
                 >
                     <Route path={"home"} element={<HomePage/>}/>
-                    <Route path={"channel/:chatUUID"} element={<ChatPage/>}/>
+                    <Route path={"channel/:sendUserUUID/:receiptUserUUID"} element={<ChatPage/>}/>
                 </Route>
             </Routes>
         </BrowserRouter>

@@ -11,10 +11,11 @@ import {Chat} from "@/modules/chat/components/chat.tsx";
 import {useForm} from "react-hook-form";
 
 export const ChatPage = () => {
-    const chatUUID = useParams()?.chatUUID ?? '';
+    const sendUserUUID = useParams()?.sendUserUUID ?? '';
+    const receiptUserUUID = useParams()?.receiptUserUUID ?? '';
 
     return (
-        <ChatPageProvider chatUUID={chatUUID}>
+        <ChatPageProvider sendUserUUID={sendUserUUID} receiptUserUUID={receiptUserUUID}>
             <ChatPageState/>
         </ChatPageProvider>
     );
@@ -34,7 +35,7 @@ const ChatPageState = () => {
             </Menubar>
             <ResizablePanelGroup direction="vertical" className={"border rounded"}>
                 <ResizablePanel defaultSize={90}>
-                    <div className="flex h-full border-b p-4">
+                    <div className="flex h-full border-b p-4 overflow-y-scroll scroll-smooth" id={'test'}>
                         <Chat/>
                     </div>
                 </ResizablePanel>
@@ -48,13 +49,14 @@ const ChatPageState = () => {
 }
 
 const SendInputMessage = () => {
-    const {register, handleSubmit} = useForm()
+    const {register, handleSubmit, reset} = useForm()
 
     const {sendMessage} = useContext(ChatPageContext)
 
     // @ts-ignore
     const submitMessage = (data) => {
         sendMessage(data?.message ?? '')
+        reset()
     }
 
     return (

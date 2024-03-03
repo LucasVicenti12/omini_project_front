@@ -12,17 +12,20 @@ class CoreRepository {
             if (response.status === 200) {
                 return {
                     token: response.data.token,
+                    userUUID: response.data.userUUID,
                     error: null
                 }
             } else {
                 return {
                     token: null,
+                    userUUID: null,
                     error: "Invalid credentials"
                 }
             }
         } catch (e) {
             return {
                 token: null,
+                userUUID: null,
                 error: "An unexpected error has occurred"
             }
         }

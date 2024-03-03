@@ -14,7 +14,8 @@ type AuthProviderState = {
     loginLoading: boolean,
     login: (username: string, password: string) => void,
     logout: () => void,
-    registerAccount: (username: string, password: string, confirmPassword: string) => void
+    registerAccount: (username: string, password: string, confirmPassword: string) => void,
+    returnUserUUID: () => string,
 }
 
 const initialState: AuthProviderState = {
@@ -22,7 +23,8 @@ const initialState: AuthProviderState = {
     loginLoading: false,
     login: () => null,
     logout: () => null,
-    registerAccount: () => null
+    registerAccount: () => null,
+    returnUserUUID: () => "",
 }
 export const AuthContext = createContext<AuthProviderState>(initialState);
 
@@ -39,6 +41,7 @@ export const AuthProvider = ({children, authKey}: AuthProviderProp) => {
             coreRepository.login(username, password).then((response) => {
                 if(response.error === null){
                     localStorage.setItem(authKey, response.token ?? '')
+                    localStorage.setItem("user_uuid", response.userUUID ?? '');
                     navigate("/chat/home")
                 }else{
                     toast(response.error, {
@@ -73,7 +76,8 @@ export const AuthProvider = ({children, authKey}: AuthProviderProp) => {
                 }
                 setLoginLoading(false);
             })
-        }
+        },
+        returnUserUUID: () => localStorage.getItem("user_uuid") ?? ''
     }
 
     return (

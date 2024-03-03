@@ -23,19 +23,21 @@ export const MenuSide = () => {
 }
 
 const MenuSideContent = () => {
-    const {logout} = useContext(AuthContext);
+    const {logout, returnUserUUID} = useContext(AuthContext);
     const {theme, setTheme} = useTheme();
 
     const {users} = useContext(MenuSideContext);
 
     const navigate = useNavigate();
 
+    const userUUID = returnUserUUID();
+
     const handleChangeTheme = () => {
         setTheme(theme === 'dark' ? 'light' : 'dark');
     }
 
-    const handleChangeChat = (chatUUID: string) => {
-        navigate(`/chat/channel/${chatUUID}`);
+    const handleChangeChat = (receiptUserUUID: string) => {
+        navigate(`/chat/channel/${userUUID}/${receiptUserUUID}`);
     }
 
     return (
