@@ -1,5 +1,5 @@
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
-import {CircleUser, Grip, LogOut, Search, UserCog} from "lucide-react";
+import {CircleUser, Grip, LogOut, UserCog} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
 import {
     DropdownMenu,
@@ -12,8 +12,7 @@ import {useTheme} from "@/shared/ThemeProvider.tsx";
 import {useContext} from "react";
 import {AuthContext} from "@/core/user/provider/auth_provider.tsx";
 import {MenuSideContext, MenuSideProvider} from "@/shared/components/menu/provider/menu_side_provider.tsx";
-import {useNavigate} from "react-router-dom";
-import {Input} from "@/components/ui/input.tsx";
+import {SearchUserList} from "@/shared/components/menu/search_user_list.tsx";
 
 export const MenuSide = () => {
     return (
@@ -24,22 +23,14 @@ export const MenuSide = () => {
 }
 
 const MenuSideContent = () => {
-    const {logout, returnUserUUID} = useContext(AuthContext);
+    const {logout} = useContext(AuthContext);
     const {theme, setTheme} = useTheme();
-
-    const {users} = useContext(MenuSideContext);
-
-    const navigate = useNavigate();
-
-    const userUUID = returnUserUUID();
 
     const handleChangeTheme = () => {
         setTheme(theme === 'dark' ? 'light' : 'dark');
     }
 
-    const handleChangeChat = (receiptUserUUID: string) => {
-        navigate(`/chat/channel/${userUUID}/${receiptUserUUID}`);
-    }
+    const {users} = useContext(MenuSideContext);
 
     return (
         <div className={"h-full flex-col w-full"}>
@@ -94,31 +85,7 @@ const MenuSideContent = () => {
                     </DropdownMenu>
                 </div>
             </div>
-            <div className={"mt-10"}>
-                <div className={"p-2 w-90 h-fit rounded-md flex items-center relative"}>
-                    <Input
-                        placeholder={"Search a user"}
-                    />
-                    <Search className={"absolute right-5"} color={"gray"} size={"16"}/>
-                </div>
-                {
-                    users?.map((user: any, index: number) => (
-                        <div
-                            className={"p-3 m-2 w-90 h-fit border rounded-md flex items-center cursor-pointer hover:bg-accent hover:text-accent-foreground"}
-                            key={index}
-                            onClick={() => handleChangeChat(user?.uuid ?? '')}
-                        >
-                            <Avatar className={"h-8 w-8"}>
-                                <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn"/>
-                                <AvatarFallback>CN</AvatarFallback>
-                            </Avatar>
-                            <div className={"flex w-full h-full ml-5 justify-between items-center"}>
-                                <span className="text-muted-foreground text-sm">{user?.login ?? ''}</span>
-                            </div>
-                        </div>
-                    ))
-                }
-            </div>
+            <SearchUserList users={users}/>
         </div>
     );
 }
