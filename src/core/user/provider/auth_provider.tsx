@@ -67,7 +67,7 @@ export const AuthProvider = ({children, authKey}: AuthProviderProp) => {
             }
             coreRepository.register(username, password).then((response) => {
                 if(response.error === null){
-                    navigate("/chat/login")
+                    navigate("/login")
                 }else{
                     toast(response.error, {
                         duration: 2000,

@@ -91,6 +91,7 @@ export const ChatPageProvider = ({sendUserUUID, receiptUserUUID, children}: Chat
     }
 
     const handleSendMessage = (message: string) => {
+        if(message === '') return;
         stomp.publish({
             destination: "/app/chat_add_message",
             body: JSON.stringify({

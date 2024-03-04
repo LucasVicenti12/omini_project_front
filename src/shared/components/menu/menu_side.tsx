@@ -1,5 +1,5 @@
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
-import {CircleUser, Grip, LogOut, UserCog} from "lucide-react";
+import {CircleUser, Grip, LogOut, Search, UserCog} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
 import {
     DropdownMenu,
@@ -13,6 +13,7 @@ import {useContext} from "react";
 import {AuthContext} from "@/core/user/provider/auth_provider.tsx";
 import {MenuSideContext, MenuSideProvider} from "@/shared/components/menu/provider/menu_side_provider.tsx";
 import {useNavigate} from "react-router-dom";
+import {Input} from "@/components/ui/input.tsx";
 
 export const MenuSide = () => {
     return (
@@ -94,6 +95,12 @@ const MenuSideContent = () => {
                 </div>
             </div>
             <div className={"mt-10"}>
+                <div className={"p-2 w-90 h-fit rounded-md flex items-center relative"}>
+                    <Input
+                        placeholder={"Search a user"}
+                    />
+                    <Search className={"absolute right-5"} color={"gray"} size={"16"}/>
+                </div>
                 {
                     users?.map((user: any, index: number) => (
                         <div
