@@ -2,6 +2,7 @@ import {createContext, ReactNode, useEffect, useState} from "react";
 import {chatRepository} from "@/modules/chat/repository/chat_repository.ts";
 import SockJS from 'sockjs-client';
 import {Client} from "@stomp/stompjs";
+import {baseURL} from "@/shared/api/baseURL.ts";
 
 type ChatPageContextState = {
     userMessage: any,
@@ -53,11 +54,22 @@ export const ChatPageProvider = ({sendUserUUID, receiptUserUUID, children}: Chat
     }, [receiptUserUUID]);
 
     useEffect(() => {
-        if(chatSession.session !== ''){
+        if (chatSession.session !== '') {
             try {
                 // @ts-ignore
                 stomp.webSocketFactory = function () {
-                    return new SockJS("http://localhost:9000/ws");
+                    const test = baseURL();
+                    let host = "";
+
+                    if (test) {
+                        const url = new URL(test);
+                        host = `${url.hostname}:${url.port}`;
+
+                    } else {
+                        host = new URL(document.location.href).hostname;
+                    }
+
+                    return new SockJS(`http://${host}/ws`);
                 }
                 stomp.activate()
                 stomp.onConnect = () => {
@@ -76,7 +88,7 @@ export const ChatPageProvider = ({sendUserUUID, receiptUserUUID, children}: Chat
 
     const onReceivedMessage = (payload: any) => {
         let newMessage = JSON.parse(payload.body);
-        if(!newMessage){
+        if (!newMessage) {
             return;
         }
         // @ts-ignore
@@ -91,7 +103,7 @@ export const ChatPageProvider = ({sendUserUUID, receiptUserUUID, children}: Chat
     }
 
     const handleSendMessage = (message: string) => {
-        if(message === '') return;
+        if (message === '') return;
         stomp.publish({
             destination: "/app/chat_add_message",
             body: JSON.stringify({
