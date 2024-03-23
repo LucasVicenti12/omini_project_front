@@ -20,7 +20,6 @@ export const Chat = () => {
         }
     }, [messages]);
 
-
     return (
         <div className={"h-full w-full flex flex-col gap-2"}>
             {
@@ -43,8 +42,7 @@ export const Chat = () => {
                                     key={index}
                                 >
                                     <SendMessage
-                                        message={message.content}
-                                        time={dayjs(message.sendMessageDateTime).format("HH:mm")}
+                                        message={message}
                                     />
                                 </div>
                             </>
@@ -58,8 +56,7 @@ export const Chat = () => {
                                     key={index}
                                 >
                                     <ReceivedMessage
-                                        message={message.content}
-                                        time={dayjs(message.sendMessageDateTime).format("HH:mm")}
+                                        message={message}
                                     />
                                 </div>
                             </>

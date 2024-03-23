@@ -7,7 +7,7 @@ import {baseURL} from "@/shared/api/baseURL.ts";
 type ChatPageContextState = {
     userMessage: any,
     messages: any[],
-    sendMessage: (message: string) => void,
+    sendMessage: (message: string, attachedMessage: any) => void,
 }
 
 const initialState: ChatPageContextState = {
@@ -102,7 +102,7 @@ export const ChatPageProvider = ({sendUserUUID, receiptUserUUID, children}: Chat
         console.log(error);
     }
 
-    const handleSendMessage = (message: string) => {
+    const handleSendMessage = (message: string, attachedMessage: any) => {
         if (message === '') return;
         stomp.publish({
             destination: "/app/chat_add_message",
@@ -110,7 +110,7 @@ export const ChatPageProvider = ({sendUserUUID, receiptUserUUID, children}: Chat
                 chatSessionUUID: chatSession.session,
                 content: message,
                 sendUserUUID: sendUserUUID,
-                attachMessages: []
+                attachMessages: attachedMessage ? [{uuid: attachedMessage.uuid}] : []
             })
         })
     }
@@ -118,8 +118,8 @@ export const ChatPageProvider = ({sendUserUUID, receiptUserUUID, children}: Chat
     const value = {
         userMessage,
         messages,
-        sendMessage: (message: string) => {
-            handleSendMessage(message)
+        sendMessage: (message: string, attachedMessage: any) => {
+            handleSendMessage(message, attachedMessage)
         }
     }
 

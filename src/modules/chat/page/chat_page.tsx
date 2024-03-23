@@ -5,10 +5,11 @@ import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components
 import {Menubar} from "@/components/ui/menubar.tsx";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {Send, SmilePlus} from "lucide-react";
+import {Send, SmilePlus, X} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
 import {Chat} from "@/modules/chat/components/chat.tsx";
 import {useForm} from "react-hook-form";
+import {ChatContext, ChatProvider} from "@/modules/chat/provider/chat_provider.tsx";
 
 export const ChatPage = () => {
     const sendUserUUID = useParams()?.sendUserUUID ?? '';
@@ -34,16 +35,39 @@ const ChatPageState = () => {
                 <span className="font-semibold">{userMessage?.username ?? ''}</span>
             </Menubar>
             <ResizablePanelGroup direction="vertical" className={"border rounded"}>
-                <ResizablePanel defaultSize={90}>
-                    <div className="flex h-full border-b p-4 overflow-y-scroll scroll-smooth" id={'test'}>
-                        <Chat/>
-                    </div>
-                </ResizablePanel>
-                <ResizableHandle withHandle/>
-                <ResizablePanel defaultSize={6} maxSize={40} minSize={6} className={"bg-accent"}>
-                    <SendInputMessage/>
-                </ResizablePanel>
+                <ChatProvider>
+                    <ResizablePanel defaultSize={90}>
+                        <div className="flex h-full border-b p-4 overflow-y-scroll scroll-smooth" id={'test'}>
+                            <Chat/>
+                        </div>
+                    </ResizablePanel>
+                    <ResizableHandle withHandle/>
+                    <AttachedMessage/>
+                    <ResizablePanel defaultSize={6} maxSize={40} minSize={6} className={"bg-accent"}>
+                        <SendInputMessage/>
+                    </ResizablePanel>
+                </ChatProvider>
             </ResizablePanelGroup>
+        </div>
+    );
+}
+
+const AttachedMessage = () => {
+    const {attachedMessage, handleRemoveAttach} = useContext(ChatContext);
+
+    if (!attachedMessage) return;
+
+    return (
+        <div className={"p-2 flex justify-between"}>
+            <div>{attachedMessage.content}</div>
+            <Button
+                variant={"ghost"}
+                size={"icon"}
+                className={"h-6 w-6"}
+                onClick={handleRemoveAttach}
+            >
+                <X size={"16"}/>
+            </Button>
         </div>
     );
 }
@@ -53,9 +77,11 @@ const SendInputMessage = () => {
 
     const {sendMessage} = useContext(ChatPageContext)
 
+    const {attachedMessage} = useContext(ChatContext)
+
     // @ts-ignore
     const submitMessage = (data) => {
-        sendMessage(data?.message ?? '')
+        sendMessage(data?.message ?? '', attachedMessage)
         reset()
     }
 
