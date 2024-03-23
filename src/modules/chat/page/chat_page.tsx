@@ -5,11 +5,10 @@ import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components
 import {Menubar} from "@/components/ui/menubar.tsx";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {Send, SmilePlus, X} from "lucide-react";
+import {Send, SmilePlus} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
 import {Chat} from "@/modules/chat/components/chat.tsx";
 import {useForm} from "react-hook-form";
-import {ChatContext, ChatProvider} from "@/modules/chat/provider/chat_provider.tsx";
 
 export const ChatPage = () => {
     const sendUserUUID = useParams()?.sendUserUUID ?? '';
@@ -25,63 +24,52 @@ export const ChatPage = () => {
 const ChatPageState = () => {
     const {userMessage} = useContext(ChatPageContext)
 
-    return (
-        <div className={"w-full h-full flex-col border rounded p-4 gap-2 "} style={{display: "flex", gap: "20px"}}>
-            <Menubar className={"p-6 flex gap-2"}>
-                <Avatar className={"h-8 w-8"}>
-                    <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn"/>
-                    <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-                <span className="font-semibold">{userMessage?.username ?? ''}</span>
-            </Menubar>
-            <ResizablePanelGroup direction="vertical" className={"border rounded"}>
-                <ChatProvider>
-                    <ResizablePanel defaultSize={90}>
-                        <div className="flex h-full border-b p-4 overflow-y-scroll scroll-smooth" id={'test'}>
-                            <Chat/>
-                        </div>
-                    </ResizablePanel>
-                    <ResizableHandle withHandle/>
-                    <AttachedMessage/>
-                    <ResizablePanel defaultSize={6} maxSize={40} minSize={6} className={"bg-accent"}>
-                        <SendInputMessage/>
-                    </ResizablePanel>
-                </ChatProvider>
-            </ResizablePanelGroup>
-        </div>
-    );
-}
-
-const AttachedMessage = () => {
-    const {attachedMessage, handleRemoveAttach} = useContext(ChatContext);
-
-    if (!attachedMessage) return;
-
-    return (
-        <div className={"p-2 flex justify-between"}>
-            <div>{attachedMessage.content}</div>
-            <Button
-                variant={"ghost"}
-                size={"icon"}
-                className={"h-6 w-6"}
-                onClick={handleRemoveAttach}
-            >
-                <X size={"16"}/>
-            </Button>
-        </div>
-    );
-}
+  return (
+    <div
+      className={"w-full h-full flex-col border rounded p-4 gap-2 "}
+      style={{ display: "flex", gap: "20px" }}
+    >
+      <Menubar className={"p-6 flex gap-2"}>
+        <Avatar className={"h-8 w-8"}>
+          <AvatarImage
+            src={userMessage?.avatar ?? ""}
+            alt="@shadcn"
+          />
+          <AvatarFallback>CN</AvatarFallback>
+        </Avatar>
+        <span className="font-semibold">{userMessage?.username ?? ""}</span>
+      </Menubar>
+      <ResizablePanelGroup direction="vertical" className={"border rounded"}>
+        <ResizablePanel defaultSize={90}>
+          <div
+            className="flex h-full border-b p-4 overflow-y-scroll scroll-smooth"
+            id={"test"}
+          >
+            <Chat />
+          </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel
+          defaultSize={6}
+          maxSize={40}
+          minSize={8}
+          className={"bg-accent"}
+        >
+          <SendInputMessage />
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
+  );
+};
 
 const SendInputMessage = () => {
     const {register, handleSubmit, reset} = useForm()
 
     const {sendMessage} = useContext(ChatPageContext)
 
-    const {attachedMessage} = useContext(ChatContext)
-
     // @ts-ignore
     const submitMessage = (data) => {
-        sendMessage(data?.message ?? '', attachedMessage)
+        sendMessage(data?.message ?? '')
         reset()
     }
 
