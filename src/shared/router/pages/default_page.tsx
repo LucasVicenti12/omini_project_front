@@ -10,7 +10,7 @@ export const DefaultPage = () => {
             >
                 <ResizablePanel
                     defaultSize={15}
-                    minSize={10}
+                    minSize={15}
                     maxSize={30}
                 >
                     <MenuSide/>

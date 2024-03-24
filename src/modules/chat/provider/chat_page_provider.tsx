@@ -110,7 +110,7 @@ export const ChatPageProvider = ({sendUserUUID, receiptUserUUID, children}: Chat
                 chatSessionUUID: chatSession.session,
                 content: message,
                 sendUserUUID: sendUserUUID,
-                attachMessages: attachedMessage ? [{uuid: attachedMessage.uuid}] : []
+                attachMessage: attachedMessage ? {uuid: attachedMessage.uuid} : null
             })
         })
     }

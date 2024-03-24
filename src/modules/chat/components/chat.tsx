@@ -14,7 +14,7 @@ export const Chat = () => {
     let date = '';
 
     useEffect(() => {
-        let objDiv = document.getElementById("test");
+        let objDiv = document.getElementById("chat_messages");
         if (objDiv) {
             objDiv.scrollTop = objDiv.scrollHeight;
         }

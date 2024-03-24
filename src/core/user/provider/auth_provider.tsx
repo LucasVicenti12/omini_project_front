@@ -37,7 +37,7 @@ const initialState: AuthProviderState = {
   registerAccount: () => null,
   returnUserUUID: () => "",
   user: {},
-  changeAvatar(newAvatar: string) {},
+  changeAvatar() {},
 };
 export const AuthContext = createContext<AuthProviderState>(initialState);
 
