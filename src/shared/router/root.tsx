@@ -10,7 +10,13 @@ export const Root = () => {
         <BrowserRouter basename={"/web"}>
             <Routes>
                 <Route
-                    path={"login"}
+                    path={""}
+                    element={
+                        <div>AAAA</div>
+                    }
+                />
+                <Route
+                    path={"/login"}
                     element={
                         <AuthProvider authKey={"my_chat_token"}>
                             <LoginPage isLogin={true}/>
@@ -18,7 +24,7 @@ export const Root = () => {
                     }
                 />
                 <Route
-                    path={"register"}
+                    path={"/register"}
                     element={
                         <AuthProvider authKey={"my_chat_token"}>
                             <LoginPage isLogin={false}/>

@@ -64,12 +64,11 @@ export const ChatPageProvider = ({sendUserUUID, receiptUserUUID, children}: Chat
                     if (test) {
                         const url = new URL(test);
                         host = `${url.hostname}:${url.port}`;
-
                     } else {
                         host = new URL(document.location.href).hostname;
                     }
 
-                    return new SockJS(`http://${host}/ws`);
+                    return new SockJS(`https://${host}/ws`);
                 }
                 stomp.activate()
                 stomp.onConnect = () => {
