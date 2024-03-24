@@ -1,3 +1,9 @@
 export const HomePage = () => {
-  return <div>opaaax\</div>
+    return (
+        <div
+            className={"w-full h-full flex justify-center items-center relative"}
+        >
+            Working...
+        </div>
+    )
 }

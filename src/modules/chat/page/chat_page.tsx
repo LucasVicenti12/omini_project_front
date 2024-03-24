@@ -5,7 +5,7 @@ import {ResizableHandle, ResizablePanel, ResizablePanelGroup} from "@/components
 import {Menubar} from "@/components/ui/menubar.tsx";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar.tsx";
 import {Button} from "@/components/ui/button.tsx";
-import {Send, SmilePlus, X, MoreVertical} from "lucide-react";
+import {Send, SmilePlus, X, MoreVertical, Paperclip} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
 import {Chat} from "@/modules/chat/components/chat.tsx";
 import {useForm} from "react-hook-form";
@@ -95,6 +95,9 @@ const SendInputMessage = () => {
         <form className={"p-2 flex h-full gap-2"} onSubmit={handleSubmit(submitMessage)}>
             <Button type={"button"}>
                 <SmilePlus/>
+            </Button>
+            <Button type={"button"}>
+                <Paperclip/>
             </Button>
             <Input
                 placeholder={"Type an message..."}

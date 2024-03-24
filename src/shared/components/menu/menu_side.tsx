@@ -3,7 +3,7 @@ import {
     AvatarFallback,
     AvatarImage,
 } from "@/components/ui/avatar.tsx";
-import {CircleUser, LogOut, UserCog} from "lucide-react";
+import {CircleUser, Home, LogOut, UserCog} from "lucide-react";
 import {Button} from "@/components/ui/button.tsx";
 import {
     DropdownMenu,
@@ -24,6 +24,7 @@ import {
 } from "@/shared/components/menu/provider/menu_side_provider.tsx";
 import {SearchUserList} from "@/shared/components/menu/search_user_list.tsx";
 import {ModalChangeAvatar} from "@/core/user/components/modal_change_avatar";
+import {useNavigate} from "react-router-dom";
 
 export const MenuSide = () => {
     return (
@@ -38,6 +39,8 @@ const MenuSideContent = () => {
 
     const {user} = useContext(AuthContext);
 
+    const navigate = useNavigate();
+
     return (
         <div className={"h-full flex-col w-full"}>
             <div className={"p-3 m-2 w-90 h-fit border rounded-md flex items-center"}>
@@ -46,11 +49,20 @@ const MenuSideContent = () => {
                     <AvatarFallback>{user.altAvatar}</AvatarFallback>
                 </Avatar>
                 <div className={"flex w-full h-full ml-5 justify-between items-center"}>
-          <span className="bg-background text-muted-foreground text-sm">
-            My user
-          </span>
+                  <span className="bg-background text-muted-foreground text-sm">
+                    My user
+                  </span>
                     <MenuConfig/>
                 </div>
+            </div>
+            <div
+                className={"p-3 m-2 w-90 h-fit border rounded-md flex items-center gap-2 cursor-pointer hover:bg-accent hover:text-accent-foreground"}
+                onClick={() => navigate("/chat/home")}
+            >
+                <Home className={"text-muted-foreground"}/>
+                <span className="text-muted-foreground text-sm">
+                    Home
+                  </span>
             </div>
             <SearchUserList users={users}/>
         </div>
