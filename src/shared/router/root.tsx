@@ -4,6 +4,7 @@ import {AuthProvider} from "@/core/user/provider/auth_provider.tsx";
 import {HomePage} from "@/modules/home/page/home_page.tsx";
 import {DefaultPage} from "@/shared/router/pages/default_page.tsx";
 import {ChatPage} from "@/modules/chat/page/chat_page.tsx";
+import { NewChatPage } from "@/modules/new_chat/page/new_chat_page";
 
 export const Root = () => {
     return (
@@ -40,7 +41,7 @@ export const Root = () => {
                     }
                 >
                     <Route path={"home"} element={<HomePage/>}/>
-                    <Route path={"channel/:sendUserUUID/:receiptUserUUID"} element={<ChatPage/>}/>
+                    <Route path={"channel/:sendUserUUID/:receiptUserUUID"} element={<NewChatPage/>}/>
                 </Route>
             </Routes>
         </BrowserRouter>

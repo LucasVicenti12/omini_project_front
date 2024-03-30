@@ -58,17 +58,19 @@ export const ChatPageProvider = ({sendUserUUID, receiptUserUUID, children}: Chat
             try {
                 // @ts-ignore
                 stomp.webSocketFactory = function () {
-                    const test = baseURL();
+                    const url = baseURL();
                     let host = "";
+                    let protocol = "";
 
-                    if (test) {
-                        const url = new URL(test);
-                        host = `${url.hostname}:${url.port}`;
+                    if (url) {
+                        const newURL = new URL(url);
+                        host = `${newURL.hostname}:${newURL.port}`;
+                        protocol = "http";
                     } else {
                         host = new URL(document.location.href).hostname;
+                        protocol = "https";
                     }
-
-                    return new SockJS(`https://${host}/ws`);
+                    return new SockJS(`${protocol}://${host}/ws`);
                 }
                 stomp.activate()
                 stomp.onConnect = () => {
