@@ -26,6 +26,7 @@ export const MessageContainer = () => {
   return (
     <div
       className={"flex flex-col overflow-y-scroll h-full p-2"}
+      style={{paddingTop: "4rem"}}
       // @ts-ignore
       ref={containerRef}
     >

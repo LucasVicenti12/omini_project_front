@@ -1,6 +1,5 @@
 import {
   ChatContext,
-  Message,
 } from "@/modules/new_chat/provider/chat_provider.tsx";
 import { useContext, useState } from "react";
 import dayjs from "dayjs";
@@ -8,6 +7,7 @@ import { Button } from "@/components/ui/button.tsx";
 import { Undo2 } from "lucide-react";
 import { AuthContext } from "@/core/user/provider/auth_provider.tsx";
 import { eventEmmitter } from "@/shared/functions/event_emitter.ts";
+import {Message} from "@/modules/new_chat/entities/message.ts";
 
 type MessageCompProps = {
   message: Message;
@@ -41,7 +41,7 @@ export const MessageComp = ({
     <div
       id={"message_" + message.uuid}
       className={
-        (isFirst ? "mt-20" : "") +
+        // (isFirst ? "mt-20" : "") +
         (isLast ? "mb-20" : "") +
         (sent ? " items-end " : " items-start ") +
         " flex w-full flex-col p-1"
@@ -72,7 +72,7 @@ export const MessageComp = ({
                   whiteSpace: "pre-wrap",
                 }}
               >
-                {message.attachMessage.content}
+                {message.attachMessage.content.toString()}
               </div>
             </div>
           </div>
@@ -97,7 +97,7 @@ export const MessageComp = ({
               whiteSpace: "pre-wrap",
             }}
           >
-            {message.content}
+            {message.content.toString()}
           </div>
         </span>
         <div
@@ -106,7 +106,7 @@ export const MessageComp = ({
             (sent ? "bottom-0 -left-8" : "bottom-0 -right-8")
           }
         >
-          {dayjs(message.sendMessageDateTime).format("HH:mm")}
+          {dayjs(message.dateTimeMessage).format("HH:mm")}
         </div>
         {showAttachMessage && (
           <span

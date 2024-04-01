@@ -6,18 +6,18 @@ import { useContext, useEffect, useState } from "react";
 import { eventEmmitter } from "@/shared/functions/event_emitter.ts";
 import {
   ChatContext,
-  Message,
 } from "@/modules/new_chat/provider/chat_provider.tsx";
 import dayjs from "dayjs";
 import { AuthContext } from "@/core/user/provider/auth_provider.tsx";
 import { MessageContext } from "@/modules/new_chat/provider/message_provider.tsx";
 import { EmojiMenu } from "./emoji_menu";
 import { AttachFileMenu } from "./attach_file_menu";
+import {Message} from "../entities/message.ts";
 
 export const MessageInput = () => {
   const { user } = useContext(AuthContext);
   const { userMessage, chatSession } = useContext(ChatContext);
-  const { sendMessage, messageOut } = useContext(MessageContext);
+  const { sendMessage } = useContext(MessageContext);
 
   const { register, handleSubmit, reset } = useForm();
 
@@ -28,7 +28,8 @@ export const MessageInput = () => {
     if (!data.message) return;
     // sendMessage(data.message, attachedMessage);
 
-    data = {
+    let message: Message = {
+      uuid: null,
       chatSessionUUID: chatSession,
       content: data.message,
       attachMessage: attachedMessage,
@@ -36,9 +37,9 @@ export const MessageInput = () => {
       sendUserUUID: user.uuid
     }
 
-    messageOut(data)
-    // handleRemoveAttach();
-    // reset();
+    sendMessage(message);
+    handleRemoveAttach();
+    reset();
   };
 
   const handleRemoveAttach = () => {
@@ -70,10 +71,10 @@ export const MessageInput = () => {
                     ? "You"
                     : userMessage?.login ?? ""}
                   &nbsp;•&nbsp;
-                  {dayjs(attachedMessage.sendMessageDateTime).format("HH:mm")}
+                  {dayjs(attachedMessage.dateTimeMessage).format("HH:mm")}
                 </span>
               </div>
-              <div className={"text-md"}>{attachedMessage.content}</div>
+              <div className={"text-md"}>{attachedMessage.content.toString()}</div>
             </div>
             <div>
               <Button

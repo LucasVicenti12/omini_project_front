@@ -1,5 +1,6 @@
 import { ReactNode, createContext, useState, useEffect } from "react";
-import { chatRepository } from "@/modules/chat/repository/chat_repository.ts";
+import { chatRepository } from "@/modules/new_chat/repository/chat_repository.ts";
+import {decodeMessage, Message} from "@/modules/new_chat/entities/message.ts";
 
 type ChatProviderProps = {
   sendUserUUID: string;
@@ -16,14 +17,6 @@ type UserMessage = {
   altAvatar: string;
   name: string;
   surname: string;
-};
-
-export type Message = {
-  content: string;
-  sendMessageDateTime: string;
-  uuid: string;
-  attachMessage: Message | null;
-  sendUserUUID: string;
 };
 
 type ChatContextState = {
@@ -47,12 +40,7 @@ export const ChatProvider = ({
   sendUserUUID,
   children,
 }: ChatProviderProps) => {
-  const [value, setValue] = useState({
-    loading: true,
-    chatSession: "",
-    userMessage: null,
-    messagesFirstRequest: [],
-  });
+  const [value, setValue] = useState(ChatContextInitialState);
 
   useEffect(() => {
     Promise.all([
@@ -69,7 +57,13 @@ export const ChatProvider = ({
                 loading: false,
                 chatSession: session,
                 userMessage: response[0].user,
-                messagesFirstRequest: responseM.messages,
+                messagesFirstRequest: responseM.messages.map((message: Message) => {
+                  message.content = decodeMessage(message.content.toString());
+                  if(message.attachMessage){
+                    message.attachMessage.content = decodeMessage(message.attachMessage.content.toString());
+                  }
+                  return message
+                }),
               });
             }
           });

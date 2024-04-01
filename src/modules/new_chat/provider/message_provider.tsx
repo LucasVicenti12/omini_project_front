@@ -7,28 +7,24 @@ import {
 } from "react";
 import {
   ChatContext,
-  Message,
 } from "@/modules/new_chat/provider/chat_provider.tsx";
 import { baseURL } from "@/shared/api/baseURL.ts";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
-import { AuthContext } from "@/core/user/provider/auth_provider.tsx";
 import {
   decodeMessage,
   encodeMessage,
-  Message as NewMessage,
+  Message,
 } from "../entities/message";
 
 type MessageContextState = {
   messages: Message[];
-  sendMessage: (message: string, attachedMessage: Message | null) => void;
-  messageOut: (message: NewMessage) => void;
+  sendMessage: (message: Message) => void;
 };
 
 const messageContextInitialState: MessageContextState = {
   messages: [],
   sendMessage: () => {},
-  messageOut: () => {},
 };
 
 export const MessageContext = createContext(messageContextInitialState);
@@ -39,8 +35,6 @@ type MessageContextProps = {
 
 const stomp = new Client();
 export const MessageProvider = ({ children }: MessageContextProps) => {
-  const { user } = useContext(AuthContext);
-
   const { messagesFirstRequest, chatSession } = useContext(ChatContext);
 
   const [messages, setMessages] = useState<Message[]>([]);
@@ -84,7 +78,17 @@ export const MessageProvider = ({ children }: MessageContextProps) => {
       return;
     }
     // @ts-ignore
-    setMessages((prev) => prev.concat(JSON.parse(payload.body)));
+    setMessages((prev) => {
+      let message = JSON.parse(payload.body);
+
+      message.content = decodeMessage(message.content);
+
+      if(message.attachMessage){
+        message.attachMessage.content = decodeMessage(message.attachMessage.content.toString());
+      }
+
+      return prev.concat(message);
+    });
   };
 
   const onSocketError = (error: any) => {
@@ -92,36 +96,20 @@ export const MessageProvider = ({ children }: MessageContextProps) => {
   };
 
   const handleSendMessage = (
-    message: string,
-    attachedMessage: Message | null
+    message: Message
   ) => {
-    if (message === "") return;
+    if (message.content === "") return;
     stomp.publish({
       destination: "/app/chat_add_message",
-      body: JSON.stringify({
-        chatSessionUUID: chatSession,
-        content: message,
-        sendUserUUID: user.uuid,
-        attachMessage: attachedMessage ? { uuid: attachedMessage.uuid } : null,
-      }),
+      body: JSON.stringify(message),
     });
   };
 
   const value = {
     messages,
-    sendMessage: (message: string, attachedMessage: Message | null) => {
-      handleSendMessage(message, attachedMessage);
-    },
-    messageOut: (message: NewMessage) => {
-      
-
-      let encoded = encodeMessage(message);
-
-      console.log(encoded);
-
-      let decoded = decodeMessage(encoded);
-
-      console.log(decoded);
+    sendMessage: (message: Message) => {
+      message.content = encodeMessage(message.content);
+      handleSendMessage(message);
     },
   };
 
