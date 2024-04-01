@@ -33,7 +33,6 @@ export const MessageContainer = () => {
       {messages.map((item: Message, index: number) => {
         return (
           <MessageComp
-            isFirst={index === 0}
             isLast={index === messages.length - 1}
             message={item}
             sent={item.sendUserUUID === user.uuid}

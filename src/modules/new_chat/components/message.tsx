@@ -11,14 +11,12 @@ import {Message} from "@/modules/new_chat/entities/message.ts";
 
 type MessageCompProps = {
   message: Message;
-  isFirst: boolean;
   isLast: boolean;
   sent: boolean;
 };
 
 export const MessageComp = ({
   message,
-  isFirst,
   isLast,
   sent,
 }: MessageCompProps) => {
@@ -41,7 +39,6 @@ export const MessageComp = ({
     <div
       id={"message_" + message.uuid}
       className={
-        // (isFirst ? "mt-20" : "") +
         (isLast ? "mb-20" : "") +
         (sent ? " items-end " : " items-start ") +
         " flex w-full flex-col p-1"
