@@ -1,8 +1,8 @@
-import { Message } from "@/modules/new_chat/provider/chat_provider.tsx";
 import { MessageComp } from "@/modules/new_chat/components/message.tsx";
 import { useContext, useEffect, useRef } from "react";
 import { AuthContext } from "@/core/user/provider/auth_provider.tsx";
 import { MessageContext } from "@/modules/new_chat/provider/message_provider.tsx";
+import {Message} from "@/modules/new_chat/entities/message.ts";
 
 export const MessageContainer = () => {
   const { user } = useContext(AuthContext);
