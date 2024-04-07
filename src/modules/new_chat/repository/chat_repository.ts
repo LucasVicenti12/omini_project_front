@@ -1,4 +1,5 @@
 import {http} from "@/shared/api/http_helper.ts";
+import { Message } from "../entities/message";
 
 class ChatRepository {
     async getUserByUUID(userUUID: string): Promise<UserResponse> {
@@ -84,6 +85,14 @@ class ChatRepository {
                 messages: [],
                 error: "An unexpected error has occurred"
             }
+        }
+    }
+
+    async sendMessageWithImage(message: Message){
+        try{
+            await http.post("/messages/send_message_by_post", message)
+        }catch(e){
+            console.log(e);
         }
     }
 }

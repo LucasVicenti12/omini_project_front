@@ -5,17 +5,12 @@ import {
   useEffect,
   useState,
 } from "react";
-import {
-  ChatContext,
-} from "@/modules/new_chat/provider/chat_provider.tsx";
+import { ChatContext } from "@/modules/new_chat/provider/chat_provider.tsx";
 import { baseURL } from "@/shared/api/baseURL.ts";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
-import {
-  decodeMessage,
-  encodeMessage,
-  Message,
-} from "../entities/message";
+import { decodeMessage, encodeMessage, Message } from "../entities/message";
+import { chatRepository } from "../repository/chat_repository";
 
 type MessageContextState = {
   messages: Message[];
@@ -83,8 +78,10 @@ export const MessageProvider = ({ children }: MessageContextProps) => {
 
       message.content = decodeMessage(message.content);
 
-      if(message.attachMessage){
-        message.attachMessage.content = decodeMessage(message.attachMessage.content.toString());
+      if (message.attachMessage) {
+        message.attachMessage.content = decodeMessage(
+          message.attachMessage.content.toString()
+        );
       }
 
       return prev.concat(message);
@@ -95,10 +92,11 @@ export const MessageProvider = ({ children }: MessageContextProps) => {
     console.log(error);
   };
 
-  const handleSendMessage = (
-    message: Message
-  ) => {
+  const handleSendMessage = (message: Message) => {
     if (message.content === "") return;
+
+    console.log(stomp);
+
     stomp.publish({
       destination: "/app/chat_add_message",
       body: JSON.stringify(message),
@@ -108,6 +106,11 @@ export const MessageProvider = ({ children }: MessageContextProps) => {
   const value = {
     messages,
     sendMessage: (message: Message) => {
+      if (message.content.image) {
+        message.content = encodeMessage(message.content);
+        chatRepository.sendMessageWithImage(message);
+        return;
+      }
       message.content = encodeMessage(message.content);
       handleSendMessage(message);
     },

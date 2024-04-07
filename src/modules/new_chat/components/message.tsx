@@ -1,13 +1,11 @@
-import {
-  ChatContext,
-} from "@/modules/new_chat/provider/chat_provider.tsx";
+import { ChatContext } from "@/modules/new_chat/provider/chat_provider.tsx";
 import { useContext, useState } from "react";
 import dayjs from "dayjs";
 import { Button } from "@/components/ui/button.tsx";
 import { Undo2 } from "lucide-react";
 import { AuthContext } from "@/core/user/provider/auth_provider.tsx";
 import { eventEmmitter } from "@/shared/functions/event_emitter.ts";
-import {Message} from "@/modules/new_chat/entities/message.ts";
+import { Message } from "@/modules/new_chat/entities/message.ts";
 
 type MessageCompProps = {
   message: Message;
@@ -15,11 +13,7 @@ type MessageCompProps = {
   sent: boolean;
 };
 
-export const MessageComp = ({
-  message,
-  isLast,
-  sent,
-}: MessageCompProps) => {
+export const MessageComp = ({ message, isLast, sent }: MessageCompProps) => {
   const { userMessage } = useContext(ChatContext);
   const { user } = useContext(AuthContext);
   const [showAttachMessage, setShowAttachMessage] = useState(false);
@@ -85,17 +79,39 @@ export const MessageComp = ({
         }
       >
         <span className={"text-md " + (sent ? "text-white" : "")}>
-          <div
-            style={{
-              maxWidth: "400px",
-              textWrap: "wrap",
-              height: "auto",
-              wordWrap: "break-word",
-              whiteSpace: "pre-wrap",
-            }}
-          >
-            {message.content.toString()}
-          </div>
+          {typeof message.content == "object" ? (
+            <div
+              className="p-2"
+              style={{
+                maxWidth: "400px",
+              }}
+            >
+              <img src={message.content?.image ?? ""} className="rounded" />
+              <div
+                style={{
+                  maxWidth: "400px",
+                  textWrap: "wrap",
+                  height: "auto",
+                  wordWrap: "break-word",
+                  whiteSpace: "pre-wrap",
+                }}
+              >
+                {message.content.text.toString()}
+              </div>
+            </div>
+          ) : (
+            <div
+              style={{
+                maxWidth: "400px",
+                textWrap: "wrap",
+                height: "auto",
+                wordWrap: "break-word",
+                whiteSpace: "pre-wrap",
+              }}
+            >
+              {message.content.toString()}
+            </div>
+          )}
         </span>
         <div
           className={

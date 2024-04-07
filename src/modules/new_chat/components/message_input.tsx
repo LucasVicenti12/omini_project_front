@@ -26,7 +26,6 @@ export const MessageInput = () => {
   // @ts-ignore
   const submitMessage = (data) => {
     if (!data.message) return;
-    // sendMessage(data.message, attachedMessage);
 
     let message: Message = {
       uuid: null,
