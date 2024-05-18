@@ -1,6 +1,6 @@
 import { ReactNode, createContext, useState, useEffect } from "react";
 import { chatRepository } from "@/modules/new_chat/repository/chat_repository.ts";
-import {decodeMessage, Message} from "@/modules/new_chat/entities/message.ts";
+import {decodeMessage, Message, ImageContent} from "@/modules/new_chat/entities/message.ts";
 
 type ChatProviderProps = {
   sendUserUUID: string;
@@ -61,6 +61,12 @@ export const ChatProvider = ({
                   message.content = decodeMessage(message.content.toString());
                   if(message.attachMessage){
                     message.attachMessage.content = decodeMessage(message.attachMessage.content.toString());
+                    if(
+                      typeof message.attachMessage.content === 'object' &&
+                      message.attachMessage.content.hasOwnProperty('image')
+                    ){
+                      message.attachMessage.content = message.attachMessage.content?.text ?? '';
+                    }
                   }
                   return message
                 }),

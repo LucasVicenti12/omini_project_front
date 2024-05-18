@@ -10,17 +10,17 @@ export type Message = {
   sendUserUUID: string;
 };
 
-type TextContent = {
+export type TextContent = {
   text: string;
 };
 
-type FileContent = {
+export type FileContent = {
   text: string;
   file: string;
   fileType: string;
 };
 
-type ImageContent = {
+export type ImageContent = {
   text: string;
   image: string | null;
 };

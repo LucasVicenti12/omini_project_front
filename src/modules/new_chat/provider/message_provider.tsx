@@ -65,23 +65,29 @@ export const MessageProvider = ({ children }: MessageContextProps) => {
 
   const onReceivedMessage = (payload: any) => {
     let newMessage = JSON.parse(payload.body);
+
     if (!newMessage) {
       return;
     }
-    // @ts-ignore
-    if (messages.includes(newMessage)) {
-      return;
-    }
+    
     // @ts-ignore
     setMessages((prev) => {
       let message = JSON.parse(payload.body);
 
-      message.content = decodeMessage(message.content);
+      message.content = decodeMessage(message.content.toString());
 
-      if (message.attachMessage) {
-        message.attachMessage.content = decodeMessage(
-          message.attachMessage.content.toString()
-        );
+      if(message.attachMessage){
+        message.attachMessage.content = decodeMessage(message.attachMessage.content.toString());
+        if(
+          typeof message.attachMessage.content === 'object' &&
+          message.attachMessage.content.hasOwnProperty('image')
+        ){
+          message.attachMessage.content = message.attachMessage.content?.text ?? '';
+        }
+      }
+
+      if(prev.includes(message)){
+        return prev;
       }
 
       return prev.concat(message);
@@ -92,27 +98,26 @@ export const MessageProvider = ({ children }: MessageContextProps) => {
     console.log(error);
   };
 
-  const handleSendMessage = (message: Message) => {
-    if (message.content === "") return;
-
-    console.log(stomp);
-
-    stomp.publish({
-      destination: "/app/chat_add_message",
-      body: JSON.stringify(message),
-    });
-  };
-
   const value = {
     messages,
     sendMessage: (message: Message) => {
-      if (message.content.image) {
-        message.content = encodeMessage(message.content);
-        chatRepository.sendMessageWithImage(message);
+      if (message.content === null) {
         return;
       }
+
       message.content = encodeMessage(message.content);
-      handleSendMessage(message);
+
+      if(message.attachMessage){
+        if(
+          typeof message.attachMessage.content === 'object' &&
+          message.attachMessage.content.hasOwnProperty('image')
+        ){
+          message.attachMessage.attachMessage = null;
+          message.attachMessage.content = encodeMessage(message.attachMessage.content.toString());
+        }
+      }
+
+      chatRepository.sendMessageWithImage(message);
     },
   };
 
