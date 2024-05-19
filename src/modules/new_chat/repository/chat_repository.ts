@@ -1,5 +1,6 @@
 import {http} from "@/shared/api/http_helper.ts";
 import { Message } from "../entities/message";
+import { ChatSessionResponse } from "./response/chat_session";
 
 class ChatRepository {
     async getUserByUUID(userUUID: string): Promise<UserResponse> {
@@ -24,15 +25,18 @@ class ChatRepository {
         }
     }
 
-    async connectChatSession(sendUserUUID: string, receiptUserUUID: string): Promise<ChatSessionResponse> {
+    async connectChatSession(receiptUserUUID: string): Promise<ChatSessionResponse> {
         try {
             const response = await http.get(
-                `/chat_session/connect?sendUserUUID=${sendUserUUID}&receiptUserUUID=${receiptUserUUID}`
+                `/chat_session/connect?receiptUserUUID=${receiptUserUUID}`
             )
             if (response.status === 200) {
                 if (response.data !== null) {
                     return {
-                        chatSession: response.data.chatSession.chatSession,
+                        chatSession: {
+                            session: response.data.chatSession.chatSession,
+                            user: response.data.chatSession.userChat,
+                        },
                         situation: response.data.situation,
                         error: null
                     }

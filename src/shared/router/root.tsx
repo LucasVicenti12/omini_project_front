@@ -40,7 +40,7 @@ export const Root = () => {
                     }
                 >
                     <Route path={"home"} element={<HomePage/>}/>
-                    <Route path={"channel/:sendUserUUID/:receiptUserUUID"} element={<NewChatPage/>}/>
+                    <Route path={"channel/:receiptUserUUID"} element={<NewChatPage/>}/>
                 </Route>
             </Routes>
         </BrowserRouter>

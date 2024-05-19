@@ -4,20 +4,17 @@ import { Input } from "@/components/ui/input.tsx";
 import { useForm } from "react-hook-form";
 import { useContext, useEffect, useState } from "react";
 import { eventEmmitter } from "@/shared/functions/event_emitter.ts";
-import {
-  ChatContext,
-} from "@/modules/new_chat/provider/chat_provider.tsx";
+import { ChatContext } from "@/modules/new_chat/provider/chat_provider.tsx";
 import dayjs from "dayjs";
 import { AuthContext } from "@/core/user/provider/auth_provider.tsx";
-import { MessageContext } from "@/modules/new_chat/provider/message_provider.tsx";
 import { EmojiMenu } from "./emoji_menu";
 import { AttachFileMenu } from "./attach_file_menu";
-import {Message} from "../entities/message.ts";
+import { Message } from "../entities/message.ts";
 
 export const MessageInput = () => {
   const { user } = useContext(AuthContext);
-  const { userMessage, chatSession } = useContext(ChatContext);
-  const { sendMessage } = useContext(MessageContext);
+  const { userMessage, chatSession, handleSendMessage } =
+    useContext(ChatContext);
 
   const { register, handleSubmit, reset } = useForm();
 
@@ -33,10 +30,11 @@ export const MessageInput = () => {
       content: data.message,
       attachMessage: attachedMessage,
       dateTimeMessage: null,
-      sendUserUUID: user.uuid
-    }
+      sendUserUUID: user.uuid,
+      whoSend: null,
+    };
 
-    sendMessage(message);
+    handleSendMessage(message);
     handleRemoveAttach();
     reset();
   };
@@ -62,8 +60,17 @@ export const MessageInput = () => {
     <div className={"w-full absolute bottom-0 backdrop-blur-lg border-t"}>
       {attachedMessage && (
         <div className={"p-1 pl-4 pr-4 border-b"}>
-          <div className={"flex justify-between items-center"}>
-            <div className={"flex-col"}>
+          <div className={"flex justify-between items-center gap-5"}>
+            {typeof attachedMessage.content == "object" && (
+              <div className="flex-0 w-10 flex justify-center">
+                <img
+                  /* @ts-ignore */
+                  src={attachedMessage.content.image}
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </div>
+            )}
+            <div className={"flex-col flex-1"}>
               <div className={"text-primary text-xs flex gap-2"}>
                 <span>
                   {attachedMessage.sendUserUUID === user.uuid
@@ -73,7 +80,15 @@ export const MessageInput = () => {
                   {dayjs(attachedMessage.dateTimeMessage).format("HH:mm")}
                 </span>
               </div>
-              <div className={"text-md"}>{attachedMessage.content.toString()}</div>
+              {typeof attachedMessage.content == "object" ? (
+                <div className={"text-md"}>
+                  {attachedMessage.content.text.toString()}
+                </div>
+              ) : (
+                <div className={"text-md"}>
+                  {attachedMessage.content.toString()}
+                </div>
+              )}
             </div>
             <div>
               <Button

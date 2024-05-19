@@ -54,6 +54,10 @@ export const AuthProvider = ({ children, authKey }: AuthProviderProp) => {
     coreRepository.getUserByUUID(userUUID).then((response) => {
       if (response.error === null) {
         setUser(response.user);
+      } else {
+        localStorage.removeItem(authKey);
+        localStorage.removeItem("user_uuid");
+        navigate("/login");
       }
     });
   }, [location, loginLoading]);

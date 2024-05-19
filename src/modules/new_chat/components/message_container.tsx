@@ -1,12 +1,11 @@
 import { MessageComp } from "@/modules/new_chat/components/message.tsx";
-import { useContext, useEffect, useRef } from "react";
-import { AuthContext } from "@/core/user/provider/auth_provider.tsx";
-import { MessageContext } from "@/modules/new_chat/provider/message_provider.tsx";
-import {Message} from "@/modules/new_chat/entities/message.ts";
+import React, { useContext, useEffect, useRef } from "react";
+import { Message } from "@/modules/new_chat/entities/message.ts";
+import { ChatContext } from "../provider/chat_provider";
+import dayjs from "dayjs";
 
 export const MessageContainer = () => {
-  const { user } = useContext(AuthContext);
-  const { messages } = useContext(MessageContext);
+  const { messages } = useContext(ChatContext);
 
   const containerRef = useRef();
 
@@ -23,20 +22,39 @@ export const MessageContainer = () => {
     }
   };
 
+  let dateProcedure = "";
   return (
     <div
       className={"flex flex-col overflow-y-scroll h-full p-2"}
-      style={{paddingTop: "4rem"}}
+      style={{ paddingTop: "4rem" }}
       // @ts-ignore
       ref={containerRef}
     >
       {messages.map((item: Message, index: number) => {
+        let date = dayjs(item.dateTimeMessage).format("DD/MM/YYYY");
+        if (dateProcedure != date) {
+          dateProcedure = date;
+          return (
+            <React.Fragment>
+              <div className="p-1 flex justify-center">
+                <div className="bg-muted p-2 rounded">{date}</div>
+              </div>
+              <MessageComp
+                key={index}
+                isLast={index === messages.length - 1}
+                message={item}
+                isMe={item.whoSend?.isMe!!}
+              />
+            </React.Fragment>
+          );
+        }
+
         return (
           <MessageComp
+            key={index}
             isLast={index === messages.length - 1}
             message={item}
-            sent={item.sendUserUUID === user.uuid}
-            key={index}
+            isMe={item.whoSend?.isMe!!}
           />
         );
       })}

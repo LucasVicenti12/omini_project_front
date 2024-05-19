@@ -10,7 +10,6 @@ import { Check, Paperclip, X } from "lucide-react";
 import { ChangeEvent, useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ChatContext } from "../provider/chat_provider";
-import { MessageContext } from "../provider/message_provider";
 import { Message } from "../entities/message";
 
 export const AttachFileMenu = () => {
@@ -18,8 +17,7 @@ export const AttachFileMenu = () => {
   const [imageFile, setImageFile] = useState<string | null>(null);
 
   const { user } = useContext(AuthContext);
-  const { userMessage, chatSession } = useContext(ChatContext);
-  const { sendMessage } = useContext(MessageContext);
+  const { chatSession, handleSendMessage } = useContext(ChatContext);
   const { register, handleSubmit, reset } = useForm();
 
   const changeFileImage = (evt: ChangeEvent) => {
@@ -36,7 +34,7 @@ export const AttachFileMenu = () => {
   };
 
   // @ts-ignore
-  const handleSendMessage = (data) => {
+  const sendMessage = (data) => {
     if (!data.message) return;
 
     let message: Message = {
@@ -49,9 +47,10 @@ export const AttachFileMenu = () => {
       attachMessage: null,
       dateTimeMessage: null,
       sendUserUUID: user.uuid,
+      whoSend: null
     };
 
-    sendMessage(message);
+    handleSendMessage(message);
 
     reset();
     setImageFile(null);
@@ -83,7 +82,7 @@ export const AttachFileMenu = () => {
           {imageFile ? (
             <form
               className="flex flex-col gap-2 h-full w-full"
-              onSubmit={handleSubmit(handleSendMessage)}
+              onSubmit={handleSubmit(sendMessage)}
             >
               <div
                 className="border rounded flex justify-center"

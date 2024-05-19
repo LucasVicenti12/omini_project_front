@@ -10,10 +10,10 @@ import { Message } from "@/modules/new_chat/entities/message.ts";
 type MessageCompProps = {
   message: Message;
   isLast: boolean;
-  sent: boolean;
+  isMe: boolean;
 };
 
-export const MessageComp = ({ message, isLast, sent }: MessageCompProps) => {
+export const MessageComp = ({ message, isLast, isMe }: MessageCompProps) => {
   const { userMessage } = useContext(ChatContext);
   const { user } = useContext(AuthContext);
   const [showAttachMessage, setShowAttachMessage] = useState(false);
@@ -34,7 +34,7 @@ export const MessageComp = ({ message, isLast, sent }: MessageCompProps) => {
       id={"message_" + message.uuid}
       className={
         (isLast ? "mb-20" : "") +
-        (sent ? " items-end " : " items-start ") +
+        (isMe ? " items-end " : " items-start ") +
         " flex w-full flex-col p-1"
       }
       onMouseOver={() => setShowAttachMessage(true)}
@@ -54,17 +54,41 @@ export const MessageComp = ({ message, isLast, sent }: MessageCompProps) => {
                 : userMessage?.login ?? ""}
             </div>
             <div className={"text-md"}>
-              <div
-                style={{
-                  maxWidth: "300px",
-                  textWrap: "wrap",
-                  height: "auto",
-                  wordWrap: "break-word",
-                  whiteSpace: "pre-wrap",
-                }}
-              >
-                {message.attachMessage.content.toString()}
-              </div>
+              {typeof message.attachMessage.content == "object" ? (
+                <div
+                  className="p-2"
+                  style={{
+                    maxWidth: "300px",
+                  }}
+                >
+                  {/* @ts-ignore */}
+                  <img src={message.attachMessage.content?.image ?? ""} className="rounded" />
+                  <div
+                    style={{
+                      maxWidth: "300px",
+                      textWrap: "wrap",
+                      height: "auto",
+                      wordWrap: "break-word",
+                      whiteSpace: "pre-wrap",
+                    }}
+                  >
+                    {/* @ts-ignore */}
+                    {message.attachMessage.content.text.toString()}
+                  </div>
+                </div>
+              ) : (
+                <div
+                  style={{
+                    maxWidth: "300px",
+                    textWrap: "wrap",
+                    height: "auto",
+                    wordWrap: "break-word",
+                    whiteSpace: "pre-wrap",
+                  }}
+                >
+                  {message.content.toString()}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -72,13 +96,13 @@ export const MessageComp = ({ message, isLast, sent }: MessageCompProps) => {
       <div
         className={
           "rounded " +
-          (sent
+          (isMe
             ? "bg-primary dark:bg-emerald-800 rounded-b-2xl rounded-l-2xl"
             : "bg-muted rounded-b-2xl rounded-r-2xl") +
           " p-3 relative"
         }
       >
-        <span className={"text-md " + (sent ? "text-white" : "")}>
+        <span className={"text-md " + (isMe ? "text-white" : "")}>
           {typeof message.content == "object" ? (
             <div
               className="p-2"
@@ -86,6 +110,7 @@ export const MessageComp = ({ message, isLast, sent }: MessageCompProps) => {
                 maxWidth: "400px",
               }}
             >
+              {/* @ts-ignore */}
               <img src={message.content?.image ?? ""} className="rounded" />
               <div
                 style={{
@@ -116,7 +141,7 @@ export const MessageComp = ({ message, isLast, sent }: MessageCompProps) => {
         <div
           className={
             "absolute text-xs " +
-            (sent ? "bottom-0 -left-8" : "bottom-0 -right-8")
+            (isMe ? "bottom-0 -left-8" : "bottom-0 -right-8")
           }
         >
           {dayjs(message.dateTimeMessage).format("HH:mm")}
@@ -125,7 +150,7 @@ export const MessageComp = ({ message, isLast, sent }: MessageCompProps) => {
           <span
             className={
               "text-muted-foreground absolute text-xs " +
-              (sent ? "top-0 -left-8" : "top-0 -right-8")
+              (isMe ? "top-0 -left-8" : "top-0 -right-8")
             }
           >
             <Button

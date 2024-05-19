@@ -20,7 +20,7 @@ export const SearchUserList = ({ users }: SearchUserListProps) => {
   const userUUID = returnUserUUID();
 
   const handleChangeChat = (receiptUserUUID: string) => {
-    navigate(`/chat/channel/${userUUID}/${receiptUserUUID}`);
+    navigate(`/chat/channel/${receiptUserUUID}`);
   };
 
   const [searchUser, setSearchUser] = useState<string>("");
@@ -36,7 +36,7 @@ export const SearchUserList = ({ users }: SearchUserListProps) => {
       </div>
       {users
         // @ts-ignore
-        ?.filter((user) => user.login.toLowerCase().includes(searchUser))
+        ?.filter((user) => user.login.toLowerCase().includes(searchUser.toLowerCase()))
         ?.map((user: any, index: number) => {
           if (user.uuid != userUUID) {
             return (
