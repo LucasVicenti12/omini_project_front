@@ -18,7 +18,7 @@ export const Root = () => {
                 <Route
                     path={"/login"}
                     element={
-                        <AuthProvider authKey={"my_chat_token"}>
+                        <AuthProvider>
                             <LoginPage isLogin={true}/>
                         </AuthProvider>
                     }
@@ -26,7 +26,7 @@ export const Root = () => {
                 <Route
                     path={"/register"}
                     element={
-                        <AuthProvider authKey={"my_chat_token"}>
+                        <AuthProvider>
                             <LoginPage isLogin={false}/>
                         </AuthProvider>
                     }
@@ -34,7 +34,7 @@ export const Root = () => {
                 <Route
                     path={"/chat"}
                     element={
-                        <AuthProvider authKey={"my_chat_token"}>
+                        <AuthProvider>
                             <DefaultPage/>
                         </AuthProvider>
                     }

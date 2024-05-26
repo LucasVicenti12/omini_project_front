@@ -15,7 +15,6 @@ export type AuthRequest = {
 
 type AuthProviderProp = {
   children: ReactNode;
-  authKey: string;
 };
 
 type AuthProviderState = {
@@ -41,7 +40,7 @@ const initialState: AuthProviderState = {
 };
 export const AuthContext = createContext<AuthProviderState>(initialState);
 
-export const AuthProvider = ({ children, authKey }: AuthProviderProp) => {
+export const AuthProvider = ({ children }: AuthProviderProp) => {
   const [loginLoading, setLoginLoading] = useState<boolean>(false);
   const [user, setUser] = useState<object>({});
 
@@ -55,7 +54,6 @@ export const AuthProvider = ({ children, authKey }: AuthProviderProp) => {
       if (response.error === null) {
         setUser(response.user);
       } else {
-        localStorage.removeItem(authKey);
         localStorage.removeItem("user_uuid");
         navigate("/login");
       }
@@ -69,7 +67,6 @@ export const AuthProvider = ({ children, authKey }: AuthProviderProp) => {
       setLoginLoading(true);
       coreRepository.login(username, password).then((response) => {
         if (response.error === null) {
-          localStorage.setItem(authKey, response.token ?? "");
           localStorage.setItem("user_uuid", response.userUUID ?? "");
           navigate("/chat/home");
         } else {
@@ -82,9 +79,17 @@ export const AuthProvider = ({ children, authKey }: AuthProviderProp) => {
       });
     },
     logout: () => {
-      localStorage.removeItem(authKey);
       localStorage.removeItem("user_uuid");
-      navigate("/login");
+      coreRepository.logout()
+      .then(_ => {
+        navigate("/login");
+      })
+      .catch(_ => {
+        toast("Unable to log out", {
+          duration: 2000,
+          icon: <AlertTriangle />,
+        });
+      });
     },
     registerAccount: (data: AuthRequest) => {
       setLoginLoading(true);

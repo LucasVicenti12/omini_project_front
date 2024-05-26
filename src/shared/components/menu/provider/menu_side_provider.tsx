@@ -2,11 +2,13 @@ import {createContext, ReactNode, useEffect, useState} from "react";
 import {coreRepository} from "@/core/user/repository/core_repository.ts";
 
 type MenuSideContextState = {
-    users: any
+    users: any,
+    loading: boolean,
 }
 
 const initialState: MenuSideContextState = {
-    users: []
+    users: [],
+    loading: true,
 }
 
 type MenuSideProviderProps = {
@@ -16,24 +18,26 @@ type MenuSideProviderProps = {
 export const MenuSideContext = createContext<MenuSideContextState>(initialState);
 
 export const MenuSideProvider = ({children}: MenuSideProviderProps) => {
-    const [users, setUsers] = useState([]);
+    const [params, setParams] = useState(initialState);
 
     useEffect(() => {
         coreRepository.getAllUsers().then((response) => {
             if(response.error === null){
-                setUsers(response.users);
+                setParams({
+                    users: response.users,
+                    loading: false
+                });
             }else{
-                setUsers([]);
+                setParams({
+                    users: [],
+                    loading: false
+                });
             }
         })
     }, []);
 
-    const value = {
-        users,
-    }
-
     return (
-        <MenuSideContext.Provider value={value}>
+        <MenuSideContext.Provider value={params}>
             {children}
         </MenuSideContext.Provider>
     )
