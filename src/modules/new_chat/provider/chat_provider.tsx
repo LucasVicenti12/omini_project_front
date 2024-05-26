@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useState, useEffect, useMemo } from "react";
+import { ReactNode, createContext, useState, useEffect } from "react";
 import { chatRepository } from "@/modules/new_chat/repository/chat_repository.ts";
 import {
   decodeMessage,

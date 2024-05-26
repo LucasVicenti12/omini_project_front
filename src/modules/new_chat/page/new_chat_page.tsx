@@ -4,7 +4,6 @@ import { ChatMenu } from "@/modules/new_chat/components/chat_menu.tsx";
 import { useContext } from "react";
 import { MessageInput } from "@/modules/new_chat/components/message_input.tsx";
 import { MessageContainer } from "@/modules/new_chat/components/message_container.tsx";
-import { MessageProvider } from "@/modules/new_chat/provider/message_provider.tsx";
 
 export const NewChatPage = () => {
   const receiptUserUUID = useParams()?.receiptUserUUID ?? "";
