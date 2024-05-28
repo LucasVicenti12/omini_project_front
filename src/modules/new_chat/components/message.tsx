@@ -6,6 +6,7 @@ import { Undo2 } from "lucide-react";
 import { AuthContext } from "@/core/user/provider/auth_provider.tsx";
 import { eventEmmitter } from "@/shared/functions/event_emitter.ts";
 import { Message } from "@/modules/new_chat/entities/message.ts";
+import { Dialog, DialogContent } from "@/components/custom/dialog";
 
 type MessageCompProps = {
   message: Message;
@@ -17,6 +18,7 @@ export const MessageComp = ({ message, isLast, isMe }: MessageCompProps) => {
   const { userMessage } = useContext(ChatContext);
   const { user } = useContext(AuthContext);
   const [showAttachMessage, setShowAttachMessage] = useState(false);
+  const [openImage, setOpenImage] = useState(false);
 
   const handleScrollToMessage = (messageUUID: string) => {
     const element = document.getElementById("message_" + messageUUID);
@@ -27,6 +29,10 @@ export const MessageComp = ({ message, isLast, isMe }: MessageCompProps) => {
 
   const handleAttachMessage = () => {
     eventEmmitter.emit("attach_message", message);
+  };
+
+  const handleCloseImage = () => {
+    setOpenImage(false);
   };
 
   return (
@@ -61,8 +67,11 @@ export const MessageComp = ({ message, isLast, isMe }: MessageCompProps) => {
                     maxWidth: "300px",
                   }}
                 >
-                  {/* @ts-ignore */}
-                  <img src={message.attachMessage.content?.image ?? ""} className="rounded" />
+                  <img
+                    // @ts-ignore
+                    src={message.attachMessage.content?.image ?? ""}
+                    className="rounded"
+                  />
                   <div
                     style={{
                       maxWidth: "300px",
@@ -110,8 +119,18 @@ export const MessageComp = ({ message, isLast, isMe }: MessageCompProps) => {
                 maxWidth: "400px",
               }}
             >
-              {/* @ts-ignore */}
-              <img src={message.content?.image ?? ""} className="rounded" />
+              <img
+                // @ts-ignore
+                src={message.content?.image ?? ""}
+                className="rounded cursor-pointer"
+                onClick={() => setOpenImage(true)}
+              />
+              <ImageDialog
+                open={openImage}
+                onClose={handleCloseImage}
+                // @ts-ignore
+                image={message.content?.image}
+              />
               <div
                 style={{
                   maxWidth: "400px",
@@ -167,3 +186,17 @@ export const MessageComp = ({ message, isLast, isMe }: MessageCompProps) => {
     </div>
   );
 };
+
+type ImageDialogProps = {
+  open: boolean;
+  onClose: () => void;
+  image: string;
+};
+
+const ImageDialog = ({ open, onClose, image }: ImageDialogProps) => (
+  <Dialog open={open} onOpenChange={() => onClose()}>
+    <DialogContent className="w-full">
+      <img src={image} className="rounded cursor-pointer" />
+    </DialogContent>
+  </Dialog>
+);
