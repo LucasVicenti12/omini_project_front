@@ -25,7 +25,7 @@ export const FormLogin = () => {
             <div className="grid gap-1 justify-items-start mt-3">
                 <Label>Username</Label>
                 <Input
-                    placeholder={"Type your password"}
+                    placeholder={"Type your username"}
                     {...register("username", {required: true})}
                     disabled={loginLoading}
                 />
